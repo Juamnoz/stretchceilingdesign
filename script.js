@@ -12,6 +12,17 @@
     }
   }
 
+  // ---------- Process banner background video ----------
+  var processVideo = document.querySelector('.process-banner video');
+  if(processVideo){
+    if(reducedMotion){
+      processVideo.removeAttribute('autoplay');
+      processVideo.pause();
+    } else {
+      processVideo.play().catch(function(){});
+    }
+  }
+
   // ---------- Entrance loader ----------
   var loader = document.getElementById('loader');
   if(loader && !reducedMotion){
