@@ -426,7 +426,11 @@ body.loaded .hero-inner > *{ opacity:1; transform:none; }
 }
 .service-map{ max-width: 340px; margin: 0 auto; }
 .service-map svg{ width:100%; height:auto; display:block; overflow:visible; }
-.map-land{ fill: rgba(255,255,255,.035); stroke: none; }
+.map-land{
+  fill: rgba(255,255,255,.05); stroke: none;
+  -webkit-mask-image: linear-gradient(to left, black 0%, rgba(0,0,0,.5) 45%, transparent 90%);
+  mask-image: linear-gradient(to left, black 0%, rgba(0,0,0,.5) 45%, transparent 90%);
+}
 .map-island{ fill: rgba(255,255,255,.05); stroke: rgba(0,174,239,.25); stroke-width: 1; }
 .map-route{
   fill:none; stroke: var(--blue); stroke-width: 2; stroke-linecap: round;
