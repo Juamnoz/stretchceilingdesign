@@ -23,6 +23,16 @@
     }
   }
 
+  // ---------- Portfolio item videos ----------
+  document.querySelectorAll('.portfolio-item video').forEach(function(video){
+    if(reducedMotion){
+      video.removeAttribute('autoplay');
+      video.pause();
+    } else {
+      video.play().catch(function(){});
+    }
+  });
+
   // ---------- Entrance loader ----------
   var loader = document.getElementById('loader');
   if(loader && !reducedMotion){
