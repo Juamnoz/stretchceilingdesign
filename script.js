@@ -82,6 +82,8 @@
     if(slides.length < 2) return;
     var idx = 0;
     var timer = null;
+    var baseDuration = 4500;
+    var firstSlideX2 = carousel.hasAttribute('data-first-slide-x2');
 
     function goTo(i){
       var prevVideo = slides[idx].querySelector('video');
@@ -100,23 +102,24 @@
       }
     }
 
-    function startAuto(){
+    function scheduleNext(){
       if(reducedMotion) return;
-      clearInterval(timer);
-      timer = setInterval(function(){ goTo(idx + 1); }, 4500);
+      clearTimeout(timer);
+      var duration = (firstSlideX2 && idx === 0) ? baseDuration * 2 : baseDuration;
+      timer = setTimeout(function(){ goTo(idx + 1); scheduleNext(); }, duration);
     }
 
     dots.forEach(function(dot, i){
       dot.addEventListener('click', function(){
         goTo(i);
-        startAuto();
+        scheduleNext();
       });
     });
 
     var initialVideo = slides[idx].querySelector('video');
     if(initialVideo) initialVideo.play().catch(function(){});
 
-    startAuto();
+    scheduleNext();
   });
 
   var LANG_KEY = 'scd_lang';
