@@ -494,9 +494,9 @@ body.loaded .hero-inner > *{ opacity:1; transform:none; }
 }
 .lisa-badge:hover{ opacity:1; }
 .lisa-badge img{ height: 16px; width:auto; }
-.miranet-logo-img{ height: 34px !important; }
-.footer-powered{ display:flex; align-items:center; gap:16px; }
-.footer-powered-sep{ width:1px; height:16px; background: var(--line); }
+.miranet-logo-img{ height: 68px !important; }
+.footer-powered{ display:flex; flex-direction:column; align-items:center; gap:14px; }
+.footer-powered-sep{ display:none; }
 
 /* ---------- Floating WhatsApp button ---------- */
 .whatsapp-float{
