@@ -93,7 +93,7 @@
     if(!track || slides.length < 2) return;
     var idx = 0;
     var timer = null;
-    var baseDuration = 4000;
+    var baseDuration = 6000;
     var firstSlideX2 = carousel.hasAttribute('data-first-slide-x2');
     var startMidway = carousel.hasAttribute('data-start-midway');
 
