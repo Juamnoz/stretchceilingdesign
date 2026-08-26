@@ -148,6 +148,28 @@
       });
     });
 
+    var prevBtn = carousel.querySelector('.carousel-arrow-prev');
+    var nextBtn = carousel.querySelector('.carousel-arrow-next');
+    if(prevBtn) prevBtn.addEventListener('click', function(){ goTo(idx - 1); scheduleNext(); });
+    if(nextBtn) nextBtn.addEventListener('click', function(){ goTo(idx + 1); scheduleNext(); });
+
+    // Touch swipe (mobile)
+    var touchStartX = null;
+    var track = carousel.querySelector('.carousel-track');
+    if(track){
+      track.addEventListener('touchstart', function(e){
+        touchStartX = e.changedTouches[0].clientX;
+      }, { passive: true });
+      track.addEventListener('touchend', function(e){
+        if(touchStartX === null) return;
+        var deltaX = e.changedTouches[0].clientX - touchStartX;
+        touchStartX = null;
+        if(Math.abs(deltaX) < 40) return;
+        if(deltaX < 0) goTo(idx + 1); else goTo(idx - 1);
+        scheduleNext();
+      }, { passive: true });
+    }
+
     var initialVideo = slides[idx].querySelector('video');
     if(initialVideo) playVideo(initialVideo);
 

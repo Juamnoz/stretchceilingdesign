@@ -311,6 +311,26 @@ body.loaded .hero-inner > *{ opacity:1; transform:none; }
   background: rgba(255,255,255,.4); transition: background .2s ease, transform .2s ease;
 }
 .carousel-dot.is-active{ background: var(--blue); transform: scale(1.35); }
+
+.carousel-arrow{
+  position:absolute; top:50%; transform: translateY(-50%);
+  width:38px; height:38px; z-index:3;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%; border:1px solid rgba(255,255,255,.25);
+  background: rgba(7,8,10,.55);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  color:#fff; cursor:pointer;
+  opacity:0; transition: opacity .2s ease, background .2s ease, border-color .2s ease;
+}
+.carousel:hover .carousel-arrow{ opacity:1; }
+.carousel-arrow:hover{ background: var(--blue); border-color: var(--blue); color:#04141c; }
+.carousel-arrow svg{ width:18px; height:18px; }
+.carousel-arrow-prev{ left:12px; }
+.carousel-arrow-next{ right:12px; }
+
+@media (max-width: 760px){
+  .carousel-arrow{ display:none; }
+}
 .service-copy{ padding: 46px 50px; display:flex; flex-direction:column; justify-content:center; }
 .service-num{
   font-family: var(--display); color: var(--blue-dim); font-size: 15px; letter-spacing:.1em; margin-bottom:10px;
