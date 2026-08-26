@@ -85,11 +85,12 @@
     revealEls.forEach(function(el){ io.observe(el); });
   }
 
-  // ---------- Image/video carousels ----------
+  // ---------- Image/video carousels (Instagram-style drag) ----------
   document.querySelectorAll('.carousel').forEach(function(carousel){
+    var track = carousel.querySelector('.carousel-track');
     var slides = carousel.querySelectorAll('.carousel-slide');
     var dots = carousel.querySelectorAll('.carousel-dot');
-    if(slides.length < 2) return;
+    if(!track || slides.length < 2) return;
     var idx = 0;
     var timer = null;
     var baseDuration = 4500;
@@ -120,15 +121,22 @@
       }
     }
 
+    function setPosition(withTransition, dragPx){
+      var w = carousel.clientWidth;
+      var x = -idx * w + (dragPx || 0);
+      track.style.transition = withTransition ? '' : 'none';
+      track.style.transform = 'translateX(' + x + 'px)';
+    }
+
     function goTo(i){
       var prevVideo = slides[idx].querySelector('video');
       if(prevVideo) prevVideo.pause();
-      slides[idx].classList.remove('is-active');
       if(dots[idx]) dots[idx].classList.remove('is-active');
 
       idx = (i + slides.length) % slides.length;
-      slides[idx].classList.add('is-active');
       if(dots[idx]) dots[idx].classList.add('is-active');
+
+      setPosition(true);
 
       var nextVideo = slides[idx].querySelector('video');
       if(nextVideo) playVideo(nextVideo);
@@ -153,26 +161,50 @@
     if(prevBtn) prevBtn.addEventListener('click', function(){ goTo(idx - 1); scheduleNext(); });
     if(nextBtn) nextBtn.addEventListener('click', function(){ goTo(idx + 1); scheduleNext(); });
 
-    // Touch swipe (mobile)
-    var touchStartX = null;
-    var track = carousel.querySelector('.carousel-track');
-    if(track){
-      track.addEventListener('touchstart', function(e){
-        touchStartX = e.changedTouches[0].clientX;
-      }, { passive: true });
-      track.addEventListener('touchend', function(e){
-        if(touchStartX === null) return;
-        var deltaX = e.changedTouches[0].clientX - touchStartX;
-        touchStartX = null;
-        if(Math.abs(deltaX) < 40) return;
-        if(deltaX < 0) goTo(idx + 1); else goTo(idx - 1);
-        scheduleNext();
-      }, { passive: true });
+    // Drag-to-swipe, Instagram-style: the slide follows the finger/cursor
+    // in real time, then snaps to the nearest slide on release.
+    var dragging = false;
+    var dragStartX = 0;
+    var dragDeltaX = 0;
+
+    function dragStart(clientX){
+      dragging = true;
+      dragStartX = clientX;
+      dragDeltaX = 0;
+      track.classList.add('dragging');
+      clearTimeout(timer);
     }
+    function dragMove(clientX){
+      if(!dragging) return;
+      dragDeltaX = clientX - dragStartX;
+      setPosition(false, dragDeltaX);
+    }
+    function dragEnd(){
+      if(!dragging) return;
+      dragging = false;
+      track.classList.remove('dragging');
+      var threshold = carousel.clientWidth * 0.16;
+      if(dragDeltaX < -threshold) goTo(idx + 1);
+      else if(dragDeltaX > threshold) goTo(idx - 1);
+      else setPosition(true);
+      dragDeltaX = 0;
+      scheduleNext();
+    }
+
+    track.addEventListener('touchstart', function(e){ dragStart(e.touches[0].clientX); }, { passive: true });
+    track.addEventListener('touchmove', function(e){ dragMove(e.touches[0].clientX); }, { passive: true });
+    track.addEventListener('touchend', dragEnd, { passive: true });
+
+    track.addEventListener('mousedown', function(e){ e.preventDefault(); dragStart(e.clientX); });
+    window.addEventListener('mousemove', function(e){ if(dragging) dragMove(e.clientX); });
+    window.addEventListener('mouseup', dragEnd);
+
+    window.addEventListener('resize', function(){ if(!dragging) setPosition(false); });
 
     var initialVideo = slides[idx].querySelector('video');
     if(initialVideo) playVideo(initialVideo);
 
+    setPosition(false);
     scheduleNext();
   });
 
