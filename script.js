@@ -98,6 +98,26 @@
     var startMidway = carousel.hasAttribute('data-start-midway');
 
     function playVideo(video){
+      function seekTo(time){
+        video.addEventListener('seeked', function onSeeked(){
+          video.removeEventListener('seeked', onSeeked);
+          video.play().catch(function(){});
+        }, { once: true });
+        video.currentTime = time;
+      }
+
+      var startAtAttr = video.getAttribute('data-start-at');
+      var fixedStart = startAtAttr !== null ? parseFloat(startAtAttr) : null;
+
+      if(fixedStart !== null && !isNaN(fixedStart)){
+        if(video.readyState >= 1){ seekTo(fixedStart); }
+        else {
+          video.addEventListener('loadedmetadata', function(){ seekTo(fixedStart); }, { once: true });
+          video.load();
+        }
+        return;
+      }
+
       if(!startMidway){
         video.currentTime = 0;
         video.play().catch(function(){});
@@ -106,11 +126,7 @@
 
       function seekToMiddle(){
         if(!video.duration){ video.play().catch(function(){}); return; }
-        video.addEventListener('seeked', function onSeeked(){
-          video.removeEventListener('seeked', onSeeked);
-          video.play().catch(function(){});
-        }, { once: true });
-        video.currentTime = video.duration / 2;
+        seekTo(video.duration / 2);
       }
 
       if(video.readyState >= 1 && video.duration){
