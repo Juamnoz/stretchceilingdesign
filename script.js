@@ -1,30 +1,12 @@
 (function(){
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ---------- Hero background video ----------
-  var heroVideo = document.querySelector('.hero-media video');
-  if(heroVideo){
-    if(reducedMotion){
-      heroVideo.removeAttribute('autoplay');
-      heroVideo.pause();
-    } else {
-      heroVideo.play().catch(function(){});
-    }
-  }
-
-  // ---------- Process banner background video ----------
-  var processVideo = document.querySelector('.process-banner video');
-  if(processVideo){
-    if(reducedMotion){
-      processVideo.removeAttribute('autoplay');
-      processVideo.pause();
-    } else {
-      processVideo.play().catch(function(){});
-    }
-  }
-
-  // ---------- Portfolio item videos ----------
-  document.querySelectorAll('.portfolio-item video').forEach(function(video){
+  // ---------- Autoplay background videos (hero, process banner, portfolio cards) ----------
+  // Some browsers (mobile Safari in particular) pause background video when it
+  // scrolls off-screen to save battery, and never resume it on their own.
+  // We watch these videos and nudge them back to play() whenever they re-enter view.
+  var autoplayVideos = document.querySelectorAll('.hero-media video, .process-banner video, .portfolio-item video');
+  autoplayVideos.forEach(function(video){
     if(reducedMotion){
       video.removeAttribute('autoplay');
       video.pause();
@@ -32,6 +14,17 @@
       video.play().catch(function(){});
     }
   });
+
+  if(!reducedMotion && autoplayVideos.length && 'IntersectionObserver' in window){
+    var videoIO = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting && entry.target.paused){
+          entry.target.play().catch(function(){});
+        }
+      });
+    }, { threshold: 0.1 });
+    autoplayVideos.forEach(function(video){ videoIO.observe(video); });
+  }
 
   // ---------- Entrance loader ----------
   var loader = document.getElementById('loader');
