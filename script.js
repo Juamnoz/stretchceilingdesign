@@ -97,15 +97,26 @@
     var startMidway = carousel.hasAttribute('data-start-midway');
 
     function playVideo(video){
-      function seekAndPlay(){
-        if(startMidway && video.duration){ video.currentTime = video.duration / 2; }
-        else { video.currentTime = 0; }
+      if(!startMidway){
+        video.currentTime = 0;
         video.play().catch(function(){});
+        return;
       }
-      if(startMidway && video.readyState < 1){
-        video.addEventListener('loadedmetadata', seekAndPlay, { once: true });
+
+      function seekToMiddle(){
+        if(!video.duration){ video.play().catch(function(){}); return; }
+        video.addEventListener('seeked', function onSeeked(){
+          video.removeEventListener('seeked', onSeeked);
+          video.play().catch(function(){});
+        }, { once: true });
+        video.currentTime = video.duration / 2;
+      }
+
+      if(video.readyState >= 1 && video.duration){
+        seekToMiddle();
       } else {
-        seekAndPlay();
+        video.addEventListener('loadedmetadata', seekToMiddle, { once: true });
+        video.load();
       }
     }
 
