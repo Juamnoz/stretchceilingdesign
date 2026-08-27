@@ -165,8 +165,8 @@ body.loaded .hero-inner > *{ opacity:1; transform:none; }
   transition: opacity .9s cubic-bezier(.16,.8,.24,1), transform .9s cubic-bezier(.16,.8,.24,1);
 }
 .reveal.in-view{ opacity:1; transform:none; }
-.reveal img{ transform: scale(1.1); transition: transform 1.7s cubic-bezier(.16,.8,.24,1); }
-.reveal.in-view img{ transform: scale(1); }
+.reveal img, .reveal video{ transform: scale(1.1); transition: transform 1.7s cubic-bezier(.16,.8,.24,1); }
+.reveal.in-view img, .reveal.in-view video{ transform: scale(1); }
 
 @media (prefers-reduced-motion: reduce){
   .loader{ display:none !important; }
@@ -388,10 +388,15 @@ body.loaded .hero-inner > *{ opacity:1; transform:none; }
 .process-banner-text .eyebrow{ margin-bottom:12px; }
 .process-banner-text h2{
   margin:0;
-  background: linear-gradient(100deg, #f4f6f8 20%, var(--blue) 50%, #f4f6f8 80%);
-  background-size: 220% auto;
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  animation: titleShimmer 6s linear infinite;
+  color: #f4f6f8; /* fallback if background-clip:text isn't supported */
+}
+@supports (background-clip: text) or (-webkit-background-clip: text){
+  .process-banner-text h2{
+    background: linear-gradient(100deg, #f4f6f8 20%, var(--blue) 50%, #f4f6f8 80%);
+    background-size: 220% auto;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: titleShimmer 6s linear infinite;
+  }
 }
 @keyframes titleShimmer{
   0%{ background-position: 0% 50%; }
